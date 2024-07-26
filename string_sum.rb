@@ -7,7 +7,10 @@ class StringSum
         delimiter, data = data[2..].split("\n", 2)
         delimiter = Regexp.escape(delimiter)
     end
-    data.split(/#{delimiter}|,|\n/).map(&:to_i).sum
+    numbers = data.split(/#{delimiter}|,|\n/)
+    negatives = numbers.select { |n| n.to_i < 0 }
+    raise "negative values not allowed: #{negatives.join(', ')}" if negatives.any?
+    numbers.sum(&:to_i)
   end
 end
 
@@ -17,6 +20,7 @@ puts StringSum.add("3,5") # => 8
 puts StringSum.add("5\n4,8") # => 17
 puts StringSum.add("10,20,30") # => 60
 puts StringSum.add("//;\n1;2;3") # => 6
+# puts StringSum.add("1,-2,-3") # => "negative values not allowed: -2, -3"
 
 class StringSumTest < Minitest::Test
   # Test for adding with an empty string.
@@ -43,5 +47,8 @@ class StringSumTest < Minitest::Test
   def test_addition_with_delimiters
     assert_equal 14, StringSum.add("//;\n6;8")
   end
-
+  # Test for negative values.
+  def test_addition_with_negative_number_raises_exception
+    assert_raises(RuntimeError) { StringSum.add("5,-9") }
+  end
 end
