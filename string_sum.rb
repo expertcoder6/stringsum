@@ -2,14 +2,22 @@ require 'minitest/autorun'
 class StringSum
   def self.add(data)
     return 0 if data.empty?
-    data.split(/,|\n/).map(&:to_i).sum
+    delimiter = /,|\n/
+    if data.start_with?("//")
+        delimiter, data = data[2..].split("\n", 2)
+        delimiter = Regexp.escape(delimiter)
+    end
+    data.split(/#{delimiter}|,|\n/).map(&:to_i).sum
+  end
 end
-end
+
 puts StringSum.add("") # => 0
 puts StringSum.add("5") # => 5
 puts StringSum.add("3,5") # => 8
 puts StringSum.add("5\n4,8") # => 17
 puts StringSum.add("10,20,30") # => 60
+puts StringSum.add("//;\n1;2;3") # => 6
+
 class StringSumTest < Minitest::Test
   # Test for adding with an empty string.
   def test_addition_with_empty_string
@@ -30,6 +38,10 @@ class StringSumTest < Minitest::Test
   # Test for adding with multiple numbers.
   def test_addition_with_multiple_numbers
     assert_equal 30, StringSum.add("4,5,6,7,8")
+  end
+  # Test for adding with delimiter
+  def test_addition_with_delimiters
+    assert_equal 14, StringSum.add("//;\n6;8")
   end
 
 end
