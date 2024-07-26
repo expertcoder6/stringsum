@@ -21,6 +21,7 @@ puts StringSum.add("5\n4,8") # => 17
 puts StringSum.add("10,20,30") # => 60
 puts StringSum.add("//;\n1;2;3") # => 6
 # puts StringSum.add("1,-2,-3") # => "negative values not allowed: -2, -3"
+# puts StringSum.add("//,\n1,-2,-3") # => "negative values not allowed: -2, -3"
 
 class StringSumTest < Minitest::Test
   # Test for adding with an empty string.
@@ -50,5 +51,10 @@ class StringSumTest < Minitest::Test
   # Test for negative values.
   def test_addition_with_negative_number_raises_exception
     assert_raises(RuntimeError) { StringSum.add("5,-9") }
+  end
+  # test for negative values with multiple numbers.
+  def test_addition_with_multiple_negative_numbers_raises_exception_and_shows_message
+    exception = assert_raises(RuntimeError) { StringSum.add("5,6,7,88,9,-7,-8") }
+    assert_match /negative values not allowed: -7, -8/, exception.message
   end
 end
